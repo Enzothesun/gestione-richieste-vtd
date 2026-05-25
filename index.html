@@ -909,6 +909,17 @@
     }
 
     function buildOutput() {
+      if (state.tipoRichiesta === "emergenza") {
+  return {
+    destinatari: ["MAIL DEL TECNICO DI RIFERIMENTO"],
+    oggetto: generateSubject(),
+    note: [
+      "Contattare telefonicamente il tecnico di riferimento.",
+      "Trasferire la chiamata del paziente al tecnico.",
+      "Inviare una mail al tecnico come promemoria della segnalazione."
+    ]
+  };
+}
       if (state.tipoRichiesta === "ecommerce") {
         return {
           destinatari: routing.ecommerce.destinatari,
