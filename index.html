@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestione Richieste VTD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --primary: #1565c0;
+      --primary-dark: #0d47a1;
+      --danger: #d32f2f;
+      --danger-soft: #fdeaea;
+      --success: #2e7d32;
+      --success-soft: #e8f5e9;
+      --warning: #f9a825;
+      --warning-soft: #fff8e1;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #dbe3ef;
+      --shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      width: min(1100px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 42px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ffffff, #eef5ff);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-fallback {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--primary);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.5vw, 2rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .reset-btn {
+      border: 0;
+      background: #e8eef7;
+      color: var(--primary-dark);
+      border-radius: 999px;
+      padding: 10px 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .reset-btn:hover {
+      background: #d9e7fa;
+      transform: translateY(-1px);
+    }
+
+    .stepbar {
+      margin: 18px 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+    }
+
+    .step-pill {
+      flex: 1;
+      min-width: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: #eef2f7;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .step-pill.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .step-pill.done {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .summary {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-item {
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 64px;
+    }
+
+    .summary-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 4px;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: 0.9rem;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    .wizard-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      box-shadow: var(--shadow);
+      min-height: 420px;
+    }
+
+    .step-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    }
+
+    .step-desc {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .options-grid.two {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .options-grid.region-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .choice-card {
+      border: 2px solid transparent;
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 20px;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.22s ease;
+      min-height: 138px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+      border-color: #cfe0f7;
+    }
+
+    .choice-card.danger:hover,
+    .choice-card.danger.selected {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .choice-card.primary:hover,
+    .choice-card.primary.selected {
+      border-color: var(--primary);
+      background: #eaf3ff;
+    }
+
+    .choice-card.success:hover,
+    .choice-card.success.selected {
+      border-color: var(--success);
+      background: var(--success-soft);
+    }
+
+    .choice-icon {
+      font-size: 2rem;
+    }
+
+    .choice-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .choice-subtitle {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .alert-box {
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 22px;
+      border: 1px solid transparent;
+    }
+
+    .alert-box.danger {
+      background: var(--danger-soft);
+      border-color: #f4b7b7;
+      color: #7f1d1d;
+    }
+
+    .alert-box.warning {
+      background: var(--warning-soft);
+      border-color: #ffe08a;
+      color: #6f4e00;
+    }
+
+    .alert-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .alert-box ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+      line-height: 1.75;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 7px;
+      font-size: 0.92rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-family: inherit;
+      font-size: 0.96rem;
+      outline: none;
+      transition: 0.2s ease;
+      background: #fbfdff;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(21, 101, 192, 0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 88px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      margin-top: 16px;
+    }
+
+    .toggle-row input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--danger);
+    }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: #eef2f7;
+      color: var(--primary-dark);
+    }
+
+    .btn.secondary:hover {
+      background: #dfe8f4;
+    }
+
+    .btn.copy {
+      background: #eef7ee;
+      color: var(--success);
+      margin-top: 10px;
+    }
+
+    .btn.copy:hover {
+      background: #dff0df;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .output-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .output-box {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fbfdff;
+    }
+
+    .output-box h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: var(--primary-dark);
+    }
+
+    .readonly-value {
+      width: 100%;
+      min-height: 56px;
+      border: 1px dashed #b7c5d9;
+      border-radius: 14px;
+      background: white;
+      padding: 13px;
+      font-family: inherit;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    .notes-list {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.8;
+    }
+
+    .final-warning {
+      background: var(--warning-soft);
+      border: 1px solid #ffe08a;
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 18px;
+      line-height: 1.65;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 850px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .reset-btn {
+        width: 100%;
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .options-grid,
+      .options-grid.two,
+      .options-grid.region-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-row {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .choice-card {
+        min-height: 116px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="brand">
+        <div class="logo-fallback">M</div>
+        <div>
+          <h1>Gestione Richieste VTD</h1>
+          <p class="subtitle">Supporto operativo VTD</p>
+        </div>
+      </div>
+      <button class="reset-btn" onclick="resetWizard()">↺ Nuova richiesta</button>
+    </header>
+
+    <section class="stepbar" id="stepbar"></section>
+
+    <section class="summary" aria-label="Riepilogo richiesta">
+      <div class="summary-item"><span>Richiesta</span><strong id="sumTipo">—</strong></div>
+      <div class="summary-item"><span>Paziente</span><strong id="sumPaziente">—</strong></div>
+      <div class="summary-item"><span>Regione</span><strong id="sumRegione">—</strong></div>
+      <div class="summary-item"><span>Area / ASP</span><strong id="sumArea">—</strong></div>
+      <div class="summary-item"><span>Urgenza</span><strong id="sumUrgente">—</strong></div>
+    </section>
+
+    <section class="wizard-card" id="wizard"></section>
+  </main>
+
+  <script>
+    const routing = {
+      ecommerce: {
+        destinatari: ["respiro.info@linde.com"],
+        note: ["Richieste relative a ordini effettuati tramite sito e-commerce."]
+      },
+      nord: {
+        regioni: ["Piemonte", "Valle d’Aosta", "Lombardia", "Liguria", "Triveneto"],
+        asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+        privato: { destinatari: ["elena.fuso@linde.com", "domenica.salice@linde.com", "rosa.senatore@linde.com"], note: [] }
+      },
+      centro: {
+        "Abruzzo": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["lindecarepoint.pe@linde.com"], note: [] }
+        },
+        "Molise": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["lindecarepoint.pe@linde.com"], note: [] }
+        },
+        "Marche": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["mh.vtd.it@linde.com"], note: [] }
+        },
+        "Toscana": {
+          asl: { destinatari: ["lindecarepoint.fi@linde.com"], note: [] },
+          privato: { destinatari: ["lindecarepoint.fi@linde.com"], note: [] }
+        },
+        "Lazio": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["lindecarepoint@linde.com"], note: [] }
+        },
+        "Umbria": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["lindecarepoint@linde.com"], note: [] }
+        }
+      },
+      sud: {
+        "Campania": {
+          asl: { destinatari: ["mh.vtd.it@linde.com"], note: [] },
+          privato: { destinatari: ["mh.vtd.it@linde.com"], note: [] }
+        }
+      },
+      speciali: {
+        "Calabria": {
+          "ASP Crotone / ASP Cosenza": { destinatari: ["agenzia.crotone@lindemedicale.net"], note: [] },
+          "ASP Catanzaro / ASP Vibo Valentia": { destinatari: ["agenzia.catanzaro@lindemedicale.net", "bieffeservizisnc@libero.it"], note: [] },
+          "ASP Reggio Calabria": { destinatari: ["oxyfarmsrl@gmail.com"], note: [] }
+        },
+        "Sicilia": {
+          "Palermo e Trapani": { destinatari: ["agenzia.palermo@lindemedicale.net"], note: [] },
+          "Messina": { destinatari: ["agenzia.messina@lindemedicale.net"], note: [] },
+          "Catania": { destinatari: ["vtd-catania@lindemedicale.net", "agenzia.siracusa@lindemedicale.net"], note: [] },
+          "Enna / Caltanissetta / Siracusa / Ragusa / Agrigento": { destinatari: ["agenzia.siracusa@lindemedicale.net"], note: [] }
+        }
+      }
+    };
+
+    const regioni = [
+      "Piemonte", "Valle d’Aosta", "Lombardia", "Liguria", "Triveneto",
+      "Abruzzo", "Molise", "Marche", "Toscana", "Lazio", "Umbria", "Campania",
+      "Calabria", "Sicilia"
+    ];
+
+    const noteGenerali = [
+      "Le indicazioni valgono anche fuori orario, weekend e reperibilità.",
+      "Non inviare nel report giornaliero.",
+      "Non inviare a medical.hub.it@linde.com.",
+      "Non inviare a mh.vtd.it@linde.com se non previsto dalle istruzioni regionali.",
+      "Non fornire numeri telefonici dei Linde Care Point.",
+      "Informare sempre il chiamante che verrà ricontattato da un operatore Linde."
+    ];
+
+    const state = {
+      step: 1,
+      tipoRichiesta: "",
+      tipoPaziente: "",
+      regione: "",
+      area: "",
+      urgente: false,
+      nome: "",
+      cognome: "",
+      sintesi: ""
+    };
+
+    const stepLabels = ["Tipo richiesta", "Paziente", "Regione", "Area", "Mail", "Output"];
+    const wizard = document.getElementById("wizard");
+
+    function setState(patch) {
+      Object.assign(state, patch);
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function resetWizard() {
+      Object.assign(state, {
+        step: 1,
+        tipoRichiesta: "",
+        tipoPaziente: "",
+        regione: "",
+        area: "",
+        urgente: false,
+        nome: "",
+        cognome: "",
+        sintesi: ""
+      });
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function updateSummary() {
+      document.getElementById("sumTipo").textContent = labelTipoRichiesta(state.tipoRichiesta) || "—";
+      document.getElementById("sumPaziente").textContent = labelPaziente(state.tipoPaziente) || "—";
+      document.getElementById("sumRegione").textContent = state.regione || "—";
+      document.getElementById("sumArea").textContent = state.area || "—";
+      document.getElementById("sumUrgente").textContent = state.urgente ? "Sì" : (state.tipoRichiesta ? "No" : "—");
+    }
+
+    function labelTipoRichiesta(value) {
+      return {
+        emergenza: "Emergenza apparecchiatura VTD",
+        altre: "Altre richieste VTD",
+        ecommerce: "E-commerce"
+      }[value] || "";
+    }
+
+    function labelPaziente(value) {
+      return {
+        asl: "Paziente ASL",
+        privato: "Cliente privato"
+      }[value] || "";
+    }
+
+    function renderStepbar() {
+      const visibleSteps = getVisibleSteps();
+      const html = visibleSteps.map((label, index) => {
+        const number = index + 1;
+        const cls = number === state.step ? "active" : number < state.step ? "done" : "";
+        return `<div class="step-pill ${cls}"><span>${number}</span><span>${label}</span></div>`;
+      }).join("");
+      document.getElementById("stepbar").innerHTML = html;
+    }
+
+    function getVisibleSteps() {
+      if (state.tipoRichiesta === "ecommerce") return ["Tipo richiesta", "Output"];
+      if (state.tipoRichiesta === "emergenza") {
+        return isSpecialRegion(state.regione)
+          ? ["Tipo richiesta", "Regione", "Area", "Mail", "Output"]
+          : ["Tipo richiesta", "Regione", "Mail", "Output"];
+      }
+      if (state.tipoRichiesta === "altre") {
+        return isSpecialRegion(state.regione)
+          ? ["Tipo richiesta", "Paziente", "Regione", "Area", "Mail", "Output"]
+          : ["Tipo richiesta", "Paziente", "Regione", "Mail", "Output"];
+      }
+      return stepLabels;
+    }
+
+    function render() {
+      if (state.step === 1) return renderTipoRichiesta();
+      if (state.tipoRichiesta === "ecommerce") return renderOutput();
+
+      const steps = getVisibleSteps();
+      const currentLabel = steps[state.step - 1];
+
+      if (currentLabel === "Paziente") return renderPaziente();
+      if (currentLabel === "Regione") return renderRegione();
+      if (currentLabel === "Area") return renderArea();
+      if (currentLabel === "Mail") return renderDatiMail();
+      if (currentLabel === "Output") return renderOutput();
+    }
+
+    function renderTipoRichiesta() {
+      wizard.innerHTML = `
+        <h2 class="step-title">Che tipo di richiesta stai gestendo?</h2>
+        <p class="step-desc">Scegli il ramo corretto. Il percorso si adatta automaticamente alla casistica.</p>
+        <div class="options-grid">
+          <button class="choice-card danger" onclick="chooseTipo('emergenza')">
+            <span class="choice-icon">🚨</span>
+            <span class="choice-title">Emergenza apparecchiatura VTD</span>
+            <span class="choice-subtitle">Problema tecnico o malfunzionamento dell’apparecchiatura.</span>
+          </button>
+          <button class="choice-card primary" onclick="chooseTipo('altre')">
+            <span class="choice-icon">📦</span>
+            <span class="choice-title">Altre richieste VTD</span>
+            <span class="choice-subtitle">Materiali di consumo, urgenze, consegne o altre richieste operative.</span>
+          </button>
+          <button class="choice-card success" onclick="chooseTipo('ecommerce')">
+            <span class="choice-icon">🛒</span>
+            <span class="choice-title">E-commerce</span>
+            <span class="choice-subtitle">Richieste relative a ordini effettuati tramite sito e-commerce.</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function chooseTipo(tipo) {
+      const nextStep = tipo === "ecommerce" ? 2 : 2;
+      Object.assign(state, {
+        tipoRichiesta: tipo,
+        tipoPaziente: "",
+        regione: "",
+        area: "",
+        urgente: false,
+        nome: "",
+        cognome: "",
+        sintesi: "",
+        step: nextStep
+      });
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function renderPaziente() {
+      wizard.innerHTML = `
+        <h2 class="step-title">Tipo paziente</h2>
+        <p class="step-desc">Seleziona la tipologia corretta per determinare il destinatario.</p>
+        <div class="options-grid two">
+          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'asl', step: state.step + 1 })">
+            <span class="choice-icon">🏥</span>
+            <span class="choice-title">Paziente ASL</span>
+          </button>
+          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'privato', step: state.step + 1 })">
+            <span class="choice-icon">👤</span>
+            <span class="choice-title">Cliente privato</span>
+          </button>
+        </div>
+        ${backButton()}
+      `;
+    }
+
+    function renderRegione() {
+      const emergencyAlert = state.tipoRichiesta === "emergenza" ? `
+        <div class="alert-box danger">
+          <strong>⚠️ Prima gestione obbligatoria</strong>
+          <ul>
+            <li>Contattare telefonicamente il tecnico di riferimento.</li>
+            <li>Trasferire la chiamata del paziente al tecnico.</li>
+            <li>Inviare una mail al tecnico come promemoria della segnalazione.</li>
+          </ul>
+        </div>` : "";
+
+      wizard.innerHTML = `
+        ${emergencyAlert}
+        <h2 class="step-title">Seleziona regione</h2>
+        <p class="step-desc">Per Calabria e Sicilia verrà richiesto anche il dettaglio area / ASP.</p>
+        <div class="options-grid region-grid">
+          ${regioni.map(regione => `
+            <button class="choice-card primary" onclick="chooseRegione('${escapeAttr(regione)}')">
+              <span class="choice-title">${regione}</span>
+              <span class="choice-subtitle">${isSpecialRegion(regione) ? "Gestione speciale" : "Flusso standard"}</span>
+            </button>
+          `).join("")}
+        </div>
+        ${backButton()}
+      `;
+    }
+
+    function chooseRegione(regione) {
+      state.regione = regione;
+      state.area = "";
+      if (isSpecialRegion(regione)) {
+        state.step += 1;
+      } else {
+        state.step += 1;
+      }
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function renderArea() {
+      const aree = Object.keys(routing.speciali[state.regione] || {});
+      wizard.innerHTML = `
+        <h2 class="step-title">Seleziona area / ASP</h2>
+        <p class="step-desc">La gestione per ${state.regione} è speciale: scegli il dettaglio corretto.</p>
+        <div class="options-grid two">
+          ${aree.map(area => `
+            <button class="choice-card primary" onclick="setState({ area: '${escapeAttr(area)}', step: state.step + 1 })">
+              <span class="choice-title">${area}</span>
+            </button>
+          `).join("")}
+        </div>
+        ${backButton()}
+      `;
+    }
+
+    function renderDatiMail() {
+      wizard.innerHTML = `
+        <h2 class="step-title">Dati per oggetto mail</h2>
+        <p class="step-desc">Compila i dati. L’oggetto viene generato automaticamente.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="nome">Nome paziente</label>
+            <input id="nome" type="text" value="${escapeAttr(state.nome)}" oninput="state.nome = this.value" placeholder="Es. Mario" />
+          </div>
+          <div class="field">
+            <label for="cognome">Cognome paziente</label>
+            <input id="cognome" type="text" value="${escapeAttr(state.cognome)}" oninput="state.cognome = this.value" placeholder="Es. Rossi" />
+          </div>
+          <div class="field full">
+            <label for="sintesi">Sintesi richiesta</label>
+            <textarea id="sintesi" oninput="state.sintesi = this.value" placeholder="Es. Richiesta materiale di consumo">${escapeHTML(state.sintesi)}</textarea>
+          </div>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" ${state.urgente ? "checked" : ""} onchange="state.urgente = this.checked; updateSummary();" />
+          <strong>🚨 Richiesta urgente</strong>
+        </label>
+        <div class="nav-row">
+          <button class="btn secondary" onclick="goBack()">← Indietro</button>
+          <button class="btn primary" onclick="goToOutput()">Genera output →</button>
+        </div>
+      `;
+    }
+
+    function goToOutput() {
+      state.nome = document.getElementById("nome")?.value || state.nome;
+      state.cognome = document.getElementById("cognome")?.value || state.cognome;
+      state.sintesi = document.getElementById("sintesi")?.value || state.sintesi;
+      state.step += 1;
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function renderOutput() {
+      const output = buildOutput();
+      wizard.innerHTML = `
+        <h2 class="step-title">Output operativo</h2>
+        <p class="step-desc">Copia destinatari, oggetto e note operative.</p>
+
+        ${state.tipoRichiesta === "emergenza" ? `
+          <div class="alert-box danger">
+            <strong>⚠️ Emergenza tecnica</strong>
+            <ul>
+              <li>Contattare telefonicamente il tecnico di riferimento.</li>
+              <li>Trasferire la chiamata del paziente al tecnico.</li>
+              <li>Inviare una mail al tecnico come promemoria della segnalazione.</li>
+            </ul>
+          </div>
+        ` : ""}
+
+        <div class="output-grid">
+          <div class="output-box">
+            <h3>Destinatario principale</h3>
+            <div class="readonly-value" id="destinatariValue">${output.destinatari.join("\n")}</div>
+            <button class="btn copy" onclick="copyText('destinatariValue', this)">📋 Copia destinatari</button>
+          </div>
+
+          <div class="output-box ${state.tipoRichiesta === "ecommerce" ? "hidden" : ""}">
+            <h3>Oggetto mail</h3>
+            <div class="readonly-value" id="oggettoValue">${output.oggetto}</div>
+            <button class="btn copy" onclick="copyText('oggettoValue', this)">📋 Copia oggetto mail</button>
+          </div>
+
+          <div class="output-box">
+            <h3>Note operative</h3>
+            <ul class="notes-list" id="noteValue">
+              ${output.note.map(nota => `<li>${nota}</li>`).join("")}
+            </ul>
+            <button class="btn copy" onclick="copyNotes(this)">📋 Copia note</button>
+          </div>
+        </div>
+
+        <div class="final-warning">
+          <strong>Promemoria:</strong> non fornire numeri telefonici dei Linde Care Point. Informare il chiamante che verrà ricontattato da un operatore Linde.
+        </div>
+
+        <div class="nav-row">
+          <button class="btn secondary" onclick="goBack()">← Indietro</button>
+          <button class="btn primary" onclick="resetWizard()">Nuova richiesta</button>
+        </div>
+      `;
+    }
+
+    function buildOutput() {
+      if (state.tipoRichiesta === "ecommerce") {
+        return {
+          destinatari: routing.ecommerce.destinatari,
+          oggetto: "",
+          note: [...routing.ecommerce.note, ...noteGenerali.slice(4)]
+        };
+      }
+
+      const route = getRoute();
+      const destinatari = route?.destinatari || ["Destinatario non trovato: verificare la procedura."];
+      const note = [...(route?.note || []), ...noteGenerali];
+      const oggetto = generateSubject();
+
+      return { destinatari, oggetto, note };
+    }
+
+    function getRoute() {
+      if (isSpecialRegion(state.regione)) {
+        return routing.speciali[state.regione]?.[state.area];
+      }
+
+      if (routing.nord.regioni.includes(state.regione)) {
+        return routing.nord[state.tipoPaziente || "asl"];
+      }
+
+      if (routing.centro[state.regione]) {
+        return routing.centro[state.regione][state.tipoPaziente || "asl"];
+      }
+
+      if (routing.sud[state.regione]) {
+        return routing.sud[state.regione][state.tipoPaziente || "asl"];
+      }
+
+      return null;
+    }
+
+    function generateSubject() {
+      const nome = cleanText(state.nome).toUpperCase() || "NOME";
+      const cognome = cleanText(state.cognome).toUpperCase() || "COGNOME";
+      const sintesi = cleanText(state.sintesi).toUpperCase() || "SINTESI RICHIESTA";
+      const luogo = (state.area || state.regione || "REGIONE").toUpperCase();
+      const base = `PAZ ${cognome} ${nome} – ${sintesi} – ${luogo}`;
+      return state.urgente ? `URGENTE – ${base}` : base;
+    }
+
+    function isSpecialRegion(regione) {
+      return regione === "Calabria" || regione === "Sicilia";
+    }
+
+    function goBack() {
+      if (state.step <= 1) return;
+      state.step -= 1;
+      updateSummary();
+      renderStepbar();
+      render();
+    }
+
+    function backButton() {
+      return `<div class="nav-row"><button class="btn secondary" onclick="goBack()">← Indietro</button><span></span></div>`;
+    }
+
+    async function copyText(elementId, button) {
+      const text = document.getElementById(elementId)?.textContent.trim() || "";
+      await navigator.clipboard.writeText(text);
+      copiedFeedback(button);
+    }
+
+    async function copyNotes(button) {
+      const items = [...document.querySelectorAll("#noteValue li")].map(li => `- ${li.textContent.trim()}`);
+      await navigator.clipboard.writeText(items.join("\n"));
+      copiedFeedback(button);
+    }
+
+    function copiedFeedback(button) {
+      const original = button.textContent;
+      button.textContent = "✅ Copiato!";
+      setTimeout(() => button.textContent = original, 1600);
+    }
+
+    function cleanText(value) {
+      return String(value || "").trim().replace(/\s+/g, " ");
+    }
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHTML(value).replaceAll("`", "&#096;");
+    }
+
+    updateSummary();
+    renderStepbar();
+    render();
+  </script>
+</body>
+</html>
