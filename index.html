@@ -891,7 +891,13 @@ Per pazienti ASL e clienti privati attivi a noleggio.
       const output = buildOutput();
       wizard.innerHTML = `
         <h2 class="step-title">Output operativo</h2>
-        <p class="step-desc">Le richieste di pazienti che hanno fatto ordini on line vanno inoltrate solo via mail.</p>
+        <p class="step-desc">
+  ${
+    state.tipoRichiesta === "ecommerce"
+      ? "Le richieste di pazienti che hanno fatto ordini online vanno inoltrate solo via mail."
+      : "Le richieste VTD devono essere gestite esclusivamente tramite invio mail."
+  }
+</p>
 
         ${state.tipoRichiesta === "emergenza" ? `
           <div class="alert-box danger">
