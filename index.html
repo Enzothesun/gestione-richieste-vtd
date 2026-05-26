@@ -908,7 +908,10 @@ Per pazienti ASL e clienti privati attivi a noleggio.
           <div class="output-box">
             <h3>Destinatario principale</h3>
             <div class="readonly-value" id="destinatariValue">${output.destinatari.join("\n")}</div>
-            <button class="btn copy" onclick="copyText('destinatariValue', this)">📋 Copia destinatari</button>
+            ${output.destinatari[0] !== "MAIL DEL TECNICO DI RIFERIMENTO"
+  ? `<button class="btn copy" onclick="copyText('destinatariValue', this)">📋 Copia destinatari</button>`
+  : ""
+}
           </div>
 
           <div class="output-box ${state.tipoRichiesta === "ecommerce" ? "hidden" : ""}">
