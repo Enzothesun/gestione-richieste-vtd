@@ -758,6 +758,16 @@ Per pazienti ASL e clienti privati attivi a noleggio.
       wizard.innerHTML = `
         <h2 class="step-title">Tipo paziente</h2>
         <p class="step-desc">Seleziona la tipologia corretta per determinare il destinatario.</p>
+        <div class="options-grid two">
+          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'asl', step: state.step + 1 })">
+            <span class="choice-icon">🏥</span>
+            <span class="choice-title">Paziente ASL</span>
+          </button>
+          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'privato', step: state.step + 1 })">
+            <span class="choice-icon">👤</span>
+            <span class="choice-title">Cliente privato</span>
+          </button>
+        </div>
         <div class="alert-box warning">
   <strong>⚠️ Attenzione</strong>
   Qualora la mancanza del materiale di consumo non renda possibile la terapia
@@ -777,16 +787,7 @@ Per pazienti ASL e clienti privati attivi a noleggio.
     <li>se compare il nome del paziente → <strong>CLIENTE PRIVATO</strong></li>
   </ul>
 </div>
-        <div class="options-grid two">
-          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'asl', step: state.step + 1 })">
-            <span class="choice-icon">🏥</span>
-            <span class="choice-title">Paziente ASL</span>
-          </button>
-          <button class="choice-card primary" onclick="setState({ tipoPaziente: 'privato', step: state.step + 1 })">
-            <span class="choice-icon">👤</span>
-            <span class="choice-title">Cliente privato</span>
-          </button>
-        </div>
+        
         ${backButton()}
       `;
     }
