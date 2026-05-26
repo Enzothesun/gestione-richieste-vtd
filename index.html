@@ -278,6 +278,11 @@
     }
 
     .alert-box.warning {
+      .alert-box.info {
+  background: #eaf3ff;
+  border-color: #b9d7ff;
+  color: #0d47a1;
+}
       background: var(--warning-soft);
       border-color: #ffe08a;
       color: #6f4e00;
@@ -757,6 +762,14 @@ Per pazienti ASL e clienti privati attivi a noleggio.
   Qualora la mancanza del materiale di consumo non renda possibile la terapia
   e il paziente ne faccia richiesta in emergenza, trattare la richiesta anche
   come richiesta di intervento (Emergenza apparecchiatura VTD)
+</div>
+<div class="alert-box info">
+  <strong>🔎 Come riconoscere se il paziente è ASL o privato</strong>
+  <p>Aprire la scheda paziente e verificare il campo <strong>Codice Cliente</strong>:</p>
+  <ul>
+    <li>se compare il nome della ASL → <strong>PAZIENTE ASL</strong></li>
+    <li>se compare il nome del paziente → <strong>CLIENTE PRIVATO</strong></li>
+  </ul>
 </div>
         <div class="options-grid two">
           <button class="choice-card primary" onclick="setState({ tipoPaziente: 'asl', step: state.step + 1 })">
